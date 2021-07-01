@@ -769,12 +769,10 @@ static int sbc_analyze_audio(struct sbc_encoder_state *state,
 					state->increment + frame->blocks * 4];
 			for (blk = 0; blk < frame->blocks;
 						blk += state->increment) {
-				state->sbc_analyze_4s(
-					state, x,
-					frame->sb_sample_f[blk][ch],
-					frame->sb_sample_f[blk + 1][ch] -
-					frame->sb_sample_f[blk][ch]);
-				x -= 4 * state->increment;
+				state->sbc_analyze_4s(state, x,
+                                      frame->sb_sample_f[blk][ch],
+                                      (int)(frame->sb_sample_f[blk + 1][ch] - frame->sb_sample_f[blk][ch]) );
+                x -= 4 * state->increment;
 			}
 		}
 		return frame->blocks * 4;
@@ -785,12 +783,10 @@ static int sbc_analyze_audio(struct sbc_encoder_state *state,
 					state->increment + frame->blocks * 8];
 			for (blk = 0; blk < frame->blocks;
 						blk += state->increment) {
-				state->sbc_analyze_8s(
-					state, x,
-					frame->sb_sample_f[blk][ch],
-					frame->sb_sample_f[blk + 1][ch] -
-					frame->sb_sample_f[blk][ch]);
-				x -= 8 * state->increment;
+				state->sbc_analyze_8s(state, x,
+                                      frame->sb_sample_f[blk][ch],
+                                      (int)(frame->sb_sample_f[blk + 1][ch] - frame->sb_sample_f[blk][ch]) );
+                x -= 8 * state->increment;
 			}
 		}
 		return frame->blocks * 8;
@@ -997,9 +993,9 @@ static void sbc_encoder_init(bool msbc, struct sbc_encoder_state *state,
 struct sbc_priv {
 	bool init;
 	bool msbc;
-	struct SBC_ALIGNED sbc_frame frame;
-	struct SBC_ALIGNED sbc_decoder_state dec_state;
-	struct SBC_ALIGNED sbc_encoder_state enc_state;
+    SBC_ALIGNED struct sbc_frame frame;
+    SBC_ALIGNED struct sbc_decoder_state dec_state;
+    SBC_ALIGNED struct sbc_encoder_state enc_state;
 	int (*unpack_frame)(const uint8_t *data, struct sbc_frame *frame,
 			size_t len);
 	ssize_t (*pack_frame)(uint8_t *data, struct sbc_frame *frame,
@@ -1254,7 +1250,7 @@ SBC_EXPORT ssize_t sbc_decode(sbc_t *sbc, const void *input, size_t input_len,
 	ptr = output;
 
 	if (output_len < (size_t) (samples * priv->frame.channels * 2))
-		samples = output_len / (priv->frame.channels * 2);
+		samples = (int)(output_len / (priv->frame.channels * 2));
 
 	for (i = 0; i < samples; i++) {
 		for (ch = 0; ch < priv->frame.channels; ch++) {
