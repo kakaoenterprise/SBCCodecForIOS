@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = 'SBCCodecForIOS'
-  s.version      = '0.0.1'
+  s.version      = '0.0.2'
   s.platform     = :ios, '10.0'
   s.swift_versions = ['4.2', '5.0']
   s.requires_arc = true
